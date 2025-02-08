@@ -1,2 +1,4 @@
-from ui.menu import ui
+from ui.MainMenu import MainMenu
 
+menu = MainMenu()
+menu.entry()

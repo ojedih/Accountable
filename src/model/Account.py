@@ -12,13 +12,13 @@ class AccType:
     EXPENSE = 'EXPENSE'
 
 class Account:
-    def __init__(self, name, type, transactions):
+    def __init__(self, name, acc_type, transactions):
         self.name = name
-        self.type = type
+        self.acc_type = acc_type
         self.df = transactions
 
-    def writeTransaction(self, desc, amount, date):
-        pass
+    def writeTransaction(self, description, amount, date):
+        self.df
 
     def deleteTransaction(self, idx):
         if idx in self.df.index:
