@@ -11,10 +11,10 @@ class Ledger:
         self.config = {}
         self.accounts = {}
                 
-        self.loadConfig()
-        self.initAccounts()
+        self.load_config()
+        self.init_accounts()
             
-    def loadConfig(self): # loads config.json file into self.config
+    def load_config(self): # loads config.json file into self.config
         try:
             with open(self.path + "config.json", "r") as file:
                 self.config = json.load(file)
@@ -22,7 +22,7 @@ class Ledger:
         except Exception as e:
             raise FileNotFoundError(f"Error loading config.json: {e}")
 
-    def initAccounts(self): # initializes self.accounts[] from the config.json and corresponding .csv
+    def init_accounts(self): # initializes self.accounts[] from the config.json and corresponding .csv
         try:
             for name in self.config["accounts"].keys():
                 acc_type = self.config["accounts"][name]
@@ -33,7 +33,7 @@ class Ledger:
         except Exception as e:
             raise RuntimeError(f"Error initializing accounts: {e}")
     
-    def createAccount(self, name, type): # Creates an account with a name and type; creates new .csv file and updates config 
+    def create_account(self, name, type): # Creates an account with a name and type; creates new .csv file and updates config 
         if not os.path.exists(self.path + name) and not name in self.config["accounts"]:
             try:
                 with open(self.path + name + ".csv", mode="w", newline='') as file:
@@ -41,7 +41,7 @@ class Ledger:
                     writer.writerow(["Date", "Description", "Amount"])
 
                 self.config["accounts"][name] = str(type)
-                self.updateConfigFile()
+                self.update_config_file()
                 
                 print(f"New Account {name} Created")
             except Exception as e:
@@ -49,7 +49,7 @@ class Ledger:
         else:
             print(f"Error, account {name} already exists")
 
-    def deleteAccount(self, name): # deletes account from 1. .csv file, 2. self.config. Updates config file and reinitializes accounts
+    def delete_account(self, name): # deletes account from 1. .csv file, 2. self.config. Updates config file and reinitializes accounts
         pass
 
     def validate_transaction(self, date, description, entries): # validates a transaction with a date, description, and entries
@@ -61,7 +61,7 @@ class Ledger:
 
         if result:
             for entry in entries:
-                self.writeTransaction(self, entry[0], description, entry[1], date)
+                self.write_transaction(entry[0], description, entry[1], date)
             print("Transaction sucessfully commited. Changes are not saved yet.")
         else:
             print("Transaction failed.")
@@ -89,7 +89,7 @@ class Ledger:
                 print(f"Account {acc_name} doesn't exist")
                 return False
             else:
-                acc_type = self.accounts[acc_name].type
+                acc_type = self.accounts[acc_name].acc_type
 
                 match acc_type: # Follows the accounting identity ASSETS = LIABILITIES + INCOME - EXPENSES.
                     case AccType.ASSET:
@@ -106,15 +106,30 @@ class Ledger:
         
         print("Entries amounts don't tally")
         return False
-    
-    def writeTransaction(self, account_name, description, amount, date): # writes a transaction to an account
-        self.accounts[account_name].writeTransaction(description, amount, date)
 
-    def updateConfigFile(self):
-        with open(self.path + "config.json", "w") as file:
-            json.dump(self.config, file, indent=4)
-        print("Config file updated")
+    def write_transaction(self, account_name, description, amount, date): # writes a transaction to an account
+        self.accounts[account_name].write_transaction(description, amount, date)
 
+    def save_changes(self):
+        for account in self.accounts.values():
+            account.save_changes(self.path)
+        print("Changes were saved successfully")
 
+    def update_config_file(self):
+        try:
+            with open(self.path + "config.json", "w") as file:
+                json.dump(self.config, file, indent=4)
+            print("Config file updated")
+        except Exception as e:
+            raise Exception(f"[Ledger:update_config_file] Error: {e}")
 
-    
+    def __str__(self):
+        result = f"Ledger: {self.config['name']} \n"
+
+        for value in AccType:
+            result += f"\n{value.value} ACCOUNTS"
+            for account in self.accounts.values():
+                if account.acc_type == value.value:
+                    result += "\n" + "  - " + account.name
+
+        return result

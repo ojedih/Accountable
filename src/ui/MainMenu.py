@@ -10,7 +10,7 @@ v0.1"""
 msg_options = """
 Select an option:
     [s] Display ledgers
-    [o] Open ledger
+    [o] Open ledger [ledger_name]
     [n] New ledger
     [e] Exit
 """
@@ -32,35 +32,27 @@ class MainMenu:
             
             match entry[0]:
                 case "s":
-                    self.displayLedgers()
+                    self.display_ledgers()
                 case "o":
-                    self.openLedger(entry[1])
+                    self.open_ledger(entry[1]) # will fail if no second argument is given
                 case "n":
-                    return
-                case "d":
                     return
                 case "e":
                     return
                 case _:
                     pass
 
-    def displayLedgers(self):
+    def display_ledgers(self):
         try:
             print([folder.name for folder in Path(LEDGER_DIR).iterdir() if folder.is_dir()])
         except FileNotFoundError:
             print(f"Error: The {LEDGER_DIR} directory doesn't exist.")
 
-    def openLedger(self, name):
+    def open_ledger(self, name):
         if os.path.isdir(LEDGER_DIR + name):
             LedgerMenu(LEDGER_DIR + name + "/")
         else:
             print(f"Ledger {name} doesn't exist")
 
-    def newLedgers(self, name):
+    def new_ledger(self, name):
         pass
-
-    def deleteLedger(self, name):
-        pass
-
-#welcome()
-#print("All changes are saved. Bye Bye")
