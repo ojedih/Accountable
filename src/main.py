@@ -1,4 +1,7 @@
 from ui.MainMenu import MainMenu
 
-menu = MainMenu()
-menu.entry()
+DIRECTORY = "ledger/"
+
+menu = MainMenu(DIRECTORY)
+menu.run()
+

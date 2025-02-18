@@ -1,5 +1,3 @@
-
-import os
 from datetime import datetime
 import pandas as pd
 from enum import Enum

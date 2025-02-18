@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from model.Ledger import Ledger
 from ui.LedgerMenu import LedgerMenu
+import json
 
 msg_welcome = """
 Welcome to Accountable!
@@ -9,21 +9,22 @@ v0.1"""
 
 msg_options = """
 Select an option:
-    [s] Display ledgers
-    [o] Open ledger [ledger_name]
-    [n] New ledger
-    [e] Exit
+    - Di[s]play ledgers
+    - [o]pen ledger [ledger_name]
+    - [n]ew ledger [ledger_name]
+    - [e]xit
 """
 
-LEDGER_DIR = "ledger/"
-
 class MainMenu:
-    def entry(self):
+    def __init__(self, dir: str):
+        self.dir = dir
+    
+    def run(self):
         os.system('clear')
         print(msg_welcome)
-        self.select_option()
+        self.show_and_select_options()
 
-    def select_option(self):
+    def show_and_select_options(self):
         while True:
             print(msg_options)
             
@@ -36,7 +37,7 @@ class MainMenu:
                 case "o":
                     self.open_ledger(entry[1]) # will fail if no second argument is given
                 case "n":
-                    return
+                    self.new_ledger(entry[1]) # will fail if no second argument is given
                 case "e":
                     return
                 case _:
@@ -44,15 +45,30 @@ class MainMenu:
 
     def display_ledgers(self):
         try:
-            print([folder.name for folder in Path(LEDGER_DIR).iterdir() if folder.is_dir()])
+            print([folder.name for folder in Path(self.dir).iterdir() if folder.is_dir()])
         except FileNotFoundError:
-            print(f"Error: The {LEDGER_DIR} directory doesn't exist.")
+            print(f"Error: The {self.dir} directory doesn't exist.")
 
     def open_ledger(self, name):
-        if os.path.isdir(LEDGER_DIR + name):
-            LedgerMenu(LEDGER_DIR + name + "/")
+        if os.path.isdir(self.dir + name):
+            LedgerMenu(self.dir + name + "/")
         else:
             print(f"Ledger {name} doesn't exist")
 
     def new_ledger(self, name):
-        pass
+        if not os.path.isdir(self.dir + name): # check if directory exists
+            try:
+                os.makedirs(self.dir + name) # create directory
+                
+                with open(self.dir + name + "/config.json", mode="w", newline='') as file: # create file
+                    init_config = { # base config structure
+                        'name': name,
+                        'accounts': {}
+                    }
+                    json.dump(init_config, file, indent=4)
+                
+                print(f"New ledger {name} created")
+            except Exception as e:
+                print(f"Error while creating ledger: {e}")
+        else:
+            print(f"Cannot create ledger. Ledger {name} already exists")

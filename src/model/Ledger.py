@@ -47,7 +47,7 @@ class Ledger:
             except Exception as e:
                 print(f"Error while creating account: {e}")
         else:
-            print(f"Error, account {name} already exists")
+            print(f"Cannot create account. Account {name} already exists")
 
     def delete_account(self, name): # deletes account from 1. .csv file, 2. self.config. Updates config file and reinitializes accounts
         pass
