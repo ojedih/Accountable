@@ -29,26 +29,30 @@ class Ledger:
                 df = pd.read_csv(self.path + name + ".csv")
                 self.accounts[name] = Account(name, acc_type, df)
 
-            print(f"Accounts initialized: {self.accounts}")
+            print(f"Accounts initialized!")
         except Exception as e:
             raise RuntimeError(f"Error initializing accounts: {e}")
     
-    def create_account(self, name, type): # Creates an account with a name and type; creates new .csv file and updates config 
-        if not os.path.exists(self.path + name) and not name in self.config["accounts"]:
+    def create_account(self, name: str, acc_type: str): # Creates an account with a name and type; creates new .csv file and updates config
+        acc_type = acc_type.upper()
+
+        if acc_type not in [e.name for e in AccType]: # if account type is invalid
+            print(f"Cannot create account. Account type is invalid.")
+        elif os.path.exists(self.path + name) and name in self.config["accounts"]: # if account already exists
+            print(f"Cannot create account. Account {name} already exists")
+        else:
             try:
                 with open(self.path + name + ".csv", mode="w", newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(["Date", "Description", "Amount"])
 
-                self.config["accounts"][name] = str(type)
+                self.config["accounts"][name] = acc_type
                 self.update_config_file()
                 
-                print(f"New Account {name} Created")
+                print(f"New account {name} created")
             except Exception as e:
-                print(f"Error while creating account: {e}")
-        else:
-            print(f"Cannot create account. Account {name} already exists")
-
+                print(f"[Ledger:create_account] Error while creating account: {e}")
+            
     def delete_account(self, name): # deletes account from 1. .csv file, 2. self.config. Updates config file and reinitializes accounts
         pass
 
@@ -80,6 +84,10 @@ class Ledger:
     
     def validate_entries(self, entries):
         tally = 0
+
+        if len(entries) == 0:
+            print("No entries were provided")
+            return False
         
         for entry in entries:
             acc_name = entry[0]
@@ -128,8 +136,12 @@ class Ledger:
 
         for value in AccType:
             result += f"\n{value.value} ACCOUNTS"
+            has_account = False
             for account in self.accounts.values():
                 if account.acc_type == value.value:
+                    has_account = True
                     result += "\n" + "  - " + account.name
+            if not has_account:
+                result += "\n" + "  (empty)"
 
         return result
