@@ -1,6 +1,7 @@
 from datetime import datetime
 import pandas as pd
 from enum import Enum
+from decimal import Decimal
 
 class AccType(Enum):
     ASSET = 'ASSET'
@@ -14,22 +15,17 @@ class Account:
         self.acc_type: AccType = acc_type
         self.df: pd.DataFrame = transactions
 
-    def write_transaction(self, description, amount, date):
+    def write_transaction(self, description:str, amount:Decimal, date:datetime):
+        """Writes a transaction to the account. Expects validated input"""
         self.df.loc[len(self.df)] = [date.date(), description, amount]
-        print(self.df)
 
     def delete_transaction(self, idx):
-        if idx in self.df.index:
-            self.df = self.df.drop([idx])
-            print(f"Deleted entry at index {idx}")
-        else:
-            print(f"Couldn't find entry at {idx} to delete")
+        """Deletes a transaction at specified index"""
+        self.df = self.df.drop([idx])
 
     def save_changes(self, path):
-        try:
-            self.df.to_csv(path + self.name + ".csv", index=False)
-        except Exception as e:
-            raise Exception(f"[Account:save_changes] Error: {e}")
+        """Saves changes to self .csv"""
+        self.df.to_csv(path + self.name + ".csv", index=False)
 
     def __str__(self):
         return str(self.df)

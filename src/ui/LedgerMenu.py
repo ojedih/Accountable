@@ -16,7 +16,6 @@ Select an option:
 class LedgerMenu:
     def __init__(self, ledger_path):
         self.ledger = Ledger(ledger_path)
-        self.run()
     
     def run(self):
         print(self.ledger)
@@ -29,7 +28,7 @@ class LedgerMenu:
             
             match entry[0]:
                 case "s":
-                    self.ledger.save_changes()
+                    self.save_changes()
                 case "n":
                     self.new_transaction()
                 case "d":
@@ -41,15 +40,22 @@ class LedgerMenu:
                 case _:
                     pass
 
+    def save_changes(self):
+        try:
+            self.ledger.save_changes()
+            print("Changes saved successfully")
+        except Exception as e:
+            print(f"Error while saving changes: {e}")
+    
     def new_transaction(self):
-        # 1. date
+        # 1. input date
         date_string = input("Date (mm-dd-yyyy):: ")
         parsed_date = datetime.strptime(date_string, "%m-%d-%Y")
 
-        # 2. description
+        # 2. input description
         description = input("Description:: ")
 
-        # 3. Entries
+        # 3. input entries
         entries = []
         while True:
             entry = input("Entry [account] [amount]:: ")
@@ -64,13 +70,16 @@ class LedgerMenu:
             
             entries.append((acc_name, amount))
 
-        # 4. Validate Transactions
-        self.ledger.validate_transaction(parsed_date, description, entries)
+        # 4. Write Transaction
+        try:
+            self.ledger.write_transaction(parsed_date, description, entries)
+            print("New transaction successfully recorded. Changes are NOT saved.")
+        except Exception as e:
+            print(f"Error while recording transaction: {e}")
 
     def create_account(self, name, acc_type):
-        self.ledger.create_account(name, acc_type)
-
-
-#l1 = Ledger("ledger/testledger/")
-#control = LedgerController(l1)
-
+        try:
+            self.ledger.create_account(name, acc_type)
+            print(f"Account '{name}' created and saved.")
+        except Exception as e:
+            print(f"Error while creating an account: {e}")

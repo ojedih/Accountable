@@ -51,9 +51,10 @@ class MainMenu:
 
     def open_ledger(self, name):
         if os.path.isdir(self.dir + name):
-            LedgerMenu(self.dir + name + "/")
+            ledger_menu = LedgerMenu(self.dir + name + "/")
+            ledger_menu.run()
         else:
-            print(f"Ledger {name} doesn't exist")
+            print(f"Couldn't open ledger. Ledger {name} doesn't exist")
 
     def new_ledger(self, name):
         if not os.path.isdir(self.dir + name): # check if directory exists
