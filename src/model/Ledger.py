@@ -55,6 +55,7 @@ class Ledger:
 
             self.config["accounts"][name] = acc_type
             self.update_config_file()
+            self.load_accounts()
             
     def delete_account(self, name:str):
         """(not implemented) Deletes account from 1. .csv file, 2. self.config. Updates config file and reinitializes accounts"""

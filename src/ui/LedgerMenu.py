@@ -70,7 +70,7 @@ class LedgerMenu:
             
             entries.append((acc_name, amount))
 
-        # 4. Write Transaction
+        # 4. Try to write Transaction
         try:
             self.ledger.write_transaction(parsed_date, description, entries)
             print("New transaction successfully recorded. Changes are NOT saved.")
