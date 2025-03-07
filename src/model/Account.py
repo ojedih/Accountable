@@ -9,26 +9,28 @@ class AccType(Enum):
     INCOME = 'INCOME'
     EXPENSE = 'EXPENSE'
 
+# An account has a name and type and stores entries in a pandas dataframe. 
+# Entries have a date, description, and amount. The amount is a Decimal and can be positive or negative.
 class Account:
-    def __init__(self, name, acc_type, transactions):
+    def __init__(self, name, acc_type: AccType, entries = pd.DataFrame(columns=["date", "description", "amount"])):
         self.name: str = name
         self.acc_type: AccType = acc_type
-        self.df: pd.DataFrame = transactions
+        self.entries: pd.DataFrame = entries
 
     def write_transaction(self, description:str, amount:Decimal, date:datetime):
         """Writes a transaction to the account. Expects validated input"""
-        self.df.loc[len(self.df)] = [date.date(), description, amount]
+        self.entries.loc[len(self.entries)] = [date.date(), description, amount]
 
     def delete_transaction(self, idx):
         """Deletes a transaction at specified index"""
-        self.df = self.df.drop([idx])
+        self.entries = self.entries.drop([idx])
 
-    def save_changes(self, path):
-        """Saves changes to self .csv"""
-        self.df.to_csv(path + self.name + ".csv", index=False)
+    def get_balance(self):
+        balance = self.entries['amount'].sum()
+        return balance
 
     def __str__(self):
-        return str(self.df)
+        return str(self.entries)
 
 
     
