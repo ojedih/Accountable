@@ -13,7 +13,7 @@ class AccountNotFoundError(LedgerError):
 class AccountExistsError(LedgerError):
     pass
 
-# The Ledger has a name is responsible for managing all accounts, validating transactions, and recording entries within a transaction to the corresponding accounts
+# The Ledger is responsible for managing all accounts, validating transactions, and recording entries within a transaction to the corresponding accounts
 # A transaction consists of 2 or more entries. An entry affects one account
 class Ledger:
     def __init__(self, path):

@@ -44,12 +44,12 @@ class LedgerFileManager:
         """Creates and populates a .csv file with the new account info AND adds their name to _config"""
         while len(self._new_accounts) > 0:
             new_account = self._new_accounts.pop()
-            self._config["accounts"][new_account.acc_type].append(new_account.name)
+            self._config["accounts"][new_account.acc_type.value].append(new_account.name)
 
     def _save_account_changes(self, accounts: dict[str, Account]):
         """Saves and commits account changes to the file system"""
         for account in accounts.values():
-            account.entries.to_csv(self._path + account.acc_type + "/" + account.name + ".csv", index=False) # ledger_path/account_type/account_name.csv
+            account.entries.to_csv(self._path + account.acc_type.value + "/" + account.name + ".csv", index=False) # ledger_path/account_type/account_name.csv
 
     def _save_config(self):
         """Saves config.json file with new changes to _config."""

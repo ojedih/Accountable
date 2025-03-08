@@ -1,7 +1,7 @@
 from datetime import datetime
 import pandas as pd
 from enum import Enum
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 class AccType(Enum):
     ASSET = 'ASSET'
@@ -27,7 +27,8 @@ class Account:
 
     def get_balance(self):
         balance = self.entries['amount'].sum()
-        return balance
+        balance = Decimal(str(balance))
+        return balance.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     def __str__(self):
         return str(self.entries)
